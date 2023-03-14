@@ -20,7 +20,7 @@ jobs:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v5.2.0
         with:
-          paths: '[".github/workflows/ci-swiftpm.yml", "Sources/**", "Tests/**", "Package.*", "Externals"]'
+          paths: '[".github/workflows/ci.yml", "Sources/**", "Tests/**", "Package.*", "Externals"]'
           do_not_skip: '["push", "workflow_dispatch", "schedule"]'
 
   run-danger:
