@@ -36,38 +36,38 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-windows-executable:
-    name: Build Windows Executable
-    runs-on: windows-latest
-    steps:
-      - uses: compnerd/gha-setup-swift@main
-        with:
-          branch: swift-5.6-release
-          tag: 5.6-RELEASE
-      - uses: actions/checkout@v2
-      - run: git config --global core.protectNTFS false
-      - run: swift build -c release --static-swift-stdlib --product common-ui-doc-generator
-      - run: cmd /r dir /s /b /o:gn
-      - run: cp .build\release\common-ui-doc-generator.exe common-ui-doc-generator.exe
-      - uses: actions/upload-artifact@v3
-        with:
-          name: common-ui-doc-generator-windows.exe
-          path: common-ui-doc-generator.exe
+  # build-windows-executable:
+  #   name: Build Windows Executable
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: compnerd/gha-setup-swift@main
+  #       with:
+  #         branch: swift-5.6-release
+  #         tag: 5.6-RELEASE
+  #     - uses: actions/checkout@v2
+  #     - run: git config --global core.protectNTFS false
+  #     - run: swift build -c release --static-swift-stdlib --product common-ui-doc-generator
+  #     - run: cmd /r dir /s /b /o:gn
+  #     - run: cp .build\release\common-ui-doc-generator.exe common-ui-doc-generator.exe
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: common-ui-doc-generator-windows.exe
+  #         path: common-ui-doc-generator.exe
 
-  build-executables:
-    name: Build Ubuntu
-    runs-on: macos-12
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install cross-compiler tool
-      run: brew install keith/formulae/swiftpm-linux-cross
-    - name: Setup toolchain
-      run: setup-swiftpm-toolchain --ubuntu-release focal --arch x86_64 --swift-version 5.6.2
-    - uses: swift-actions/setup-swift@v1
-      with:
-        swift-version: "5.6.2"
-    - name: Cross compile
-      run: TOOLCHAINS=$(/usr/libexec/PlistBuddy -c "print :CFBundleIdentifier" /Users/runner/hostedtoolcache/swift-macOS/5.6.2/x64/Info.plist) swift build -c release --product common-ui-doc-generator --static-swift-stdlib --destination toolchain-focal-x86_64-5.6.2/destination_static.json
+  # build-executables:
+  #   name: Build Ubuntu
+  #   runs-on: macos-12
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Install cross-compiler tool
+  #     run: brew install keith/formulae/swiftpm-linux-cross
+  #   - name: Setup toolchain
+  #     run: setup-swiftpm-toolchain --ubuntu-release focal --arch x86_64 --swift-version 5.6.2
+  #   - uses: swift-actions/setup-swift@v1
+  #     with:
+  #       swift-version: "5.6.2"
+  #   - name: Cross compile
+  #     run: TOOLCHAINS=$(/usr/libexec/PlistBuddy -c "print :CFBundleIdentifier" /Users/runner/hostedtoolcache/swift-macOS/5.6.2/x64/Info.plist) swift build -c release --product common-ui-doc-generator --static-swift-stdlib --destination toolchain-focal-x86_64-5.6.2/destination_static.json
 
   swiftpm_linux:
     name: SwiftPM, Linux
