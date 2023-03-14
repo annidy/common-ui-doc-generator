@@ -11,7 +11,7 @@ public func shellRun(arguments: [String], stdout: Pipe? = nil) throws {
     let p = Process()
     p.executableURL = URL(fileURLWithPath: "/usr/bin/env")
     p.arguments = arguments
-    if let stdout {
+    if let stdout = stdout {
         p.standardOutput = stdout
     }
     try p.run()
