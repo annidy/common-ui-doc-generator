@@ -90,7 +90,7 @@ jobs:
           name: common-ui-doc-generator-linux
           path: common-ui-doc-generator
 
-   swiftpm_darwin:
+  swiftpm_darwin:
     name: SwiftPM, Darwin, Xcode ${{ matrix.xcode }}
     needs: filter
     runs-on: macos-12
