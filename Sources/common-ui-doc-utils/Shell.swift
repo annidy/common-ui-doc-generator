@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreFoundation
 
 public func shellRun(arguments: [String], stdout: Pipe? = nil) throws {
     let p = Process()

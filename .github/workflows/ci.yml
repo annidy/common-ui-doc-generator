@@ -42,8 +42,9 @@ jobs:
         with:
           name: common-ui-doc-generator-windows.exe
           path: common-ui-doc-generator.exe
+
   build-executables:
-    name: Run Danger
+    name: Build Ubuntu
     runs-on: macos-12
     steps:
     - uses: actions/checkout@v2
