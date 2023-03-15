@@ -1,12 +1,21 @@
 {
   "pins" : [
     {
-      "identity" : "perfect-regex",
+      "identity" : "collections",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/PerfectSideRepos/Perfect-RegEx.git",
+      "location" : "https://github.com/DavidSkrundz/Collections.git",
       "state" : {
-        "revision" : "e8b82a0a2fef115e328c7d064df2eab1d0bee5b7",
-        "version" : "3.1.4"
+        "revision" : "b91a26c2222e9215ef3e78ab64efa9f3142d6f3f",
+        "version" : "1.1.2"
+      }
+    },
+    {
+      "identity" : "regex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DavidSkrundz/Regex",
+      "state" : {
+        "revision" : "69946aa32a1de7ac4663398e53b1017ddd2691e7",
+        "version" : "0.3.0"
       }
     },
     {

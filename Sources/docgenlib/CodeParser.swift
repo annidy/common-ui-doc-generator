@@ -9,8 +9,8 @@ import Foundation
 import Regex
 
 fileprivate struct Constants {
-    static let markerBeginPattern  = #"(\s*)SAMPLE:(.*)"#
-    static let markerEndPattern  = #"(\s*)SAMPLE END"#
+    static let sampleBeginPattern  = try! Regex(#"\/\/(\s*)SAMPLE:(.*)"#)
+    static let sampleEndPattern  = try! Regex(#"\/\/(\s*)SAMPLE END"#)
 }
 
 class CodeParser {
@@ -29,16 +29,16 @@ class CodeParser {
         marker = nil
         while let line = reader?.getLine()?.trimmingCharacters(in: .whitespacesAndNewlines) {
             if marker != nil {
-                if line.contains(pattern: Constants.markerEndPattern) {
+                if !Constants.sampleEndPattern.match(line).isEmpty {
                     container[marker!] = contents
                     marker = nil
                 } else {
                     contents.append(line)
                 }
             } else {
-                let m = line.match(pattern: Constants.markerBeginPattern)
-                if m.count == 3 {
-                    marker = line.substring(with: m[2]).trimmingCharacters(in: .whitespaces)
+                let matchs = Constants.sampleBeginPattern.match(line)
+                if !matchs.isEmpty {
+                    marker = matchs[0].groups.last?.trimmingCharacters(in: .whitespaces)
                     contents = []
                 }
             }

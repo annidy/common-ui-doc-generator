@@ -16,6 +16,7 @@ final class CodeParserTests: XCTestCase {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
+SAMPLE: test
 // SAMPLE: abc
 abc = 1
 // SAMPLE END
@@ -32,6 +33,7 @@ def = 2
 
     func testMarker() throws {
         let contains = parser.parseCodeMarker()
+        XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], ["abc = 1"])
         XCTAssertEqual(contains["def"], ["def = 2", "def = 2"])
     }
