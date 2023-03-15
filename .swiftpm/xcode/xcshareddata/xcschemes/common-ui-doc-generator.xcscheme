@@ -77,15 +77,11 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-p"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "android"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "/Users/annidy/Work/GlobalCommonUI/global-common-ui-android"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/annidy/Work/GlobalCommonUI/common-ui-doc/docs/android"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
