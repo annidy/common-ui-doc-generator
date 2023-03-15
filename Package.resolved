@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "perfect-regex",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PerfectSideRepos/Perfect-RegEx.git",
+      "state" : {
+        "revision" : "e8b82a0a2fef115e328c7d064df2eab1d0bee5b7",
+        "version" : "3.1.4"
+      }
+    },
+    {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",

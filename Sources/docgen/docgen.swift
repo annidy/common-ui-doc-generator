@@ -1,9 +1,9 @@
 import Foundation
 import ArgumentParser
-import common_ui_doc_utils
+import docgenlib
 
 @main
-struct common_ui_doc_generator: ParsableCommand {
+struct docgen: ParsableCommand {
     
     @Flag var verbose = false
     @Option(help: "source file extention")

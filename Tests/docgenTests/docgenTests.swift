@@ -1,7 +1,7 @@
 import XCTest
-@testable import common_ui_doc_generator
+@testable import docgen
 
-final class common_ui_doc_generatorTests: XCTestCase {
+final class docgenTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct

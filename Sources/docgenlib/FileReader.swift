@@ -9,7 +9,7 @@ import Foundation
 
 class FileReader {
     init? (_ url: URL) {
-        let path = url.absoluteString
+        let path = url.path
         errno = 0
         file = fopen(path, "r")
         if file == nil {
@@ -32,7 +32,7 @@ class FileReader {
                 if ferror(file) != 0 {
                     perror(nil)
                 }
-                return nil
+                return line.isEmpty ? nil : line
             }
             line += String(cString: buf)
         } while line.lastIndex(of: "\n") == nil
