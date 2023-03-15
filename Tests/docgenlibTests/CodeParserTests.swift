@@ -32,10 +32,10 @@ def = 2
     }
 
     func testMarker() throws {
-        let contains = parser.parseCodeMarker()
+        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
         XCTAssertNil(contains["test"])
-        XCTAssertEqual(contains["abc"], ["abc = 1"])
-        XCTAssertEqual(contains["def"], ["def = 2", "def = 2"])
+        XCTAssertEqual(contains["abc"], "abc = 1\n")
+        XCTAssertEqual(contains["def"], "def = 2\ndef = 2\n")
     }
 
     func testPerformanceExample() throws {
