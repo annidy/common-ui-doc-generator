@@ -46,13 +46,13 @@ jobs:
   #         tag: 5.6-RELEASE
   #     - uses: actions/checkout@v2
   #     - run: git config --global core.protectNTFS false
-  #     - run: swift build -c release --static-swift-stdlib --product common-ui-doc-generator
+  #     - run: swift build -c release --static-swift-stdlib --product docgen
   #     - run: cmd /r dir /s /b /o:gn
-  #     - run: cp .build\release\common-ui-doc-generator.exe common-ui-doc-generator.exe
+  #     - run: cp .build\release\docgen.exe docgen.exe
   #     - uses: actions/upload-artifact@v3
   #       with:
-  #         name: common-ui-doc-generator-windows.exe
-  #         path: common-ui-doc-generator.exe
+  #         name: docgen-windows.exe
+  #         path: docgen.exe
 
   # build-executables:
   #   name: Build Ubuntu
@@ -67,7 +67,7 @@ jobs:
   #     with:
   #       swift-version: "5.6.2"
   #   - name: Cross compile
-  #     run: TOOLCHAINS=$(/usr/libexec/PlistBuddy -c "print :CFBundleIdentifier" /Users/runner/hostedtoolcache/swift-macOS/5.6.2/x64/Info.plist) swift build -c release --product common-ui-doc-generator --static-swift-stdlib --destination toolchain-focal-x86_64-5.6.2/destination_static.json
+  #     run: TOOLCHAINS=$(/usr/libexec/PlistBuddy -c "print :CFBundleIdentifier" /Users/runner/hostedtoolcache/swift-macOS/5.6.2/x64/Info.plist) swift build -c release --product docgen --static-swift-stdlib --destination toolchain-focal-x86_64-5.6.2/destination_static.json
 
   swiftpm_linux:
     name: SwiftPM, Linux
@@ -82,13 +82,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         if: ${{ needs.filter.outputs.should_skip != 'true' }}
-      - run: swift build -Xswiftc -suppress-warnings -c release --static-swift-stdlib --product common-ui-doc-generator
+      - run: swift build -Xswiftc -suppress-warnings -c release --static-swift-stdlib --product docgen
         if: ${{ needs.filter.outputs.should_skip != 'true' }}
-      - run: cp .build/release/common-ui-doc-generator common-ui-doc-generator
+      - run: cp .build/release/docgen docgen
       - uses: actions/upload-artifact@v3
         with:
-          name: common-ui-doc-generator-linux
-          path: common-ui-doc-generator
+          name: docgen-linux
+          path: docgen
 
   swiftpm_darwin:
     name: SwiftPM, Darwin, Xcode ${{ matrix.xcode }}
@@ -103,10 +103,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         if: ${{ needs.filter.outputs.should_skip != 'true' }}
-      - run: swift build -Xswiftc -suppress-warnings -c release --static-swift-stdlib --product common-ui-doc-generator
+      - run: swift build -Xswiftc -suppress-warnings -c release --static-swift-stdlib --product docgen
         if: ${{ needs.filter.outputs.should_skip != 'true' }}
-      - run: cp .build/release/common-ui-doc-generator common-ui-doc-generator
+      - run: cp .build/release/docgen docgen
       - uses: actions/upload-artifact@v3
         with:
-          name: common-ui-doc-generator-macos
-          path: common-ui-doc-generator
+          name: docgen-macos
+          path: docgen

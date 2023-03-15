@@ -9,4 +9,4 @@ build:
       /bin/bash -cl ' \
          swift build --static-swift-stdlib && \
          rm -rf .build/install && mkdir -p .build/install && \
-         cp -P .build/debug/common-ui-doc-generator .build/install/'
+         cp -P .build/debug/docgen .build/install/'
