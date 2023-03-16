@@ -8,7 +8,7 @@
 import Foundation
 import Regex
 
-class Rewriter {
+public class Rewriter {
     
     struct Replace {
         let range: Range<Int>
@@ -19,13 +19,13 @@ class Rewriter {
     var fileContent: String
     var replaces: [Replace]
     
-    init(fileUrl: URL) throws {
+    public init(fileUrl: URL) throws {
         self.fileUrl = fileUrl
         fileContent = try String(contentsOf: fileUrl, encoding: .utf8)
         replaces = []
     }
     
-    func replace(variable: String, value: String) {
+    public func replace(variable: String, value: String) {
         guard let pattern = try? Regex("\\{\\{\(variable)\\}\\}") else {
             return
         }
@@ -35,7 +35,7 @@ class Rewriter {
         }
     }
     
-    func renderString() -> String {
+    public func renderString() -> String {
         let sorted = replaces.sorted { l, r in
             l.range.lowerBound < r.range.lowerBound
         }

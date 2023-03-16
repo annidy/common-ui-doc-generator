@@ -16,7 +16,21 @@ struct docgen: ParsableCommand {
     var docuemntPath: String
 
     mutating func run() throws {
-        let files = listFiles(root: URL(string: sourcePath)!, exts: codeFileExt.split(separator: ",").map { String($0) })
+        let sourceFiles = listFiles(root: URL(string: sourcePath)!, exts: codeFileExt.split(separator: ",").map { String($0) })
+        var allTags = [String: String]()
+        for file in sourceFiles {
+            let parser = CodeParser(fileUrl: file)
+            let tags = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+            allTags.merge(tags)  { (_, new) in new }
+        }
+        let docsFilse = listFiles(root: URL(string: docuemntPath)!, exts: ["md"])
+        for file in docsFilse {
+            let rewriter = try Rewriter(fileUrl: file)
+            for (_, value) in allTags.enumerated() {
+                rewriter.replace(variable: value.key, value: value.value)
+            }
+            try rewriter.renderString().write(to: file, atomically: true, encoding: .utf8)
+        }
     }
 }
 

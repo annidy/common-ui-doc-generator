@@ -8,18 +8,14 @@
 import Foundation
 import Regex
 
-fileprivate struct Constants {
-
-}
-
-class CodeParser {
+public class CodeParser {
     let fileUrl: URL
     
-    init(fileUrl: URL) {
+    public init(fileUrl: URL) {
         self.fileUrl = fileUrl
     }
     
-    func parseTag(start: String, end: String) throws ->  [String: String]  {
+    public func parseTag(start: String, end: String) throws ->  [String: String]  {
         let lineStartPattern = try Regex(#"\/\/(\s*)"# + start + ":(.*)")
         let lineEndPattern = try Regex(#"\/\/(\s*)"# + end)
         
@@ -32,7 +28,7 @@ class CodeParser {
         while let line = reader?.getLine()?.trimmingCharacters(in: .whitespacesAndNewlines) {
             if marker != nil {
                 if !lineEndPattern.match(line).isEmpty {
-                    container[marker!] = contents
+                    container[marker!] = contents.trimmingCharacters(in: .newlines)
                     marker = nil
                 } else {
                     contents.append(line+"\n")
