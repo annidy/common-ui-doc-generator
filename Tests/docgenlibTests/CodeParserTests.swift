@@ -14,6 +14,14 @@ final class CodeParserTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
+
+    }
+
+    override func tearDownWithError() throws {
+        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    }
+
+    func testMarker() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
 SAMPLE: test
@@ -25,17 +33,54 @@ def = 2
 def = 2
 """.write(to: p1, atomically: true, encoding: .utf8)
         parser = CodeParser(fileUrl: p1)
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testMarker() throws {
         let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], "abc = 1\n")
         XCTAssertEqual(contains["def"], "def = 2\ndef = 2\n")
+    }
+    func testIndent() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+// SAMPLE: abc
+if (a) {
+    a = 1
+}
+// SAMPLE END
+{
+    // SAMPLE: def
+    if (b) {
+        b = 1
+bbbbb
+bbbb
+bbb
+bb
+b
+
+    }
+    // SAMPLE END
+}
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(fileUrl: p1)
+        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        XCTAssertNil(contains["test"])
+        XCTAssertEqual(contains["abc"], """
+if (a) {
+    a = 1
+}
+
+""")
+        XCTAssertEqual(contains["def"], """
+if (b) {
+    b = 1
+bbbbb
+bbbb
+bbb
+bb
+b
+
+}
+
+""")
     }
 
     func testPerformanceExample() throws {

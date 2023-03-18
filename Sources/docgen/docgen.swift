@@ -5,9 +5,17 @@ import docgenlib
 @main
 struct docgen: ParsableCommand {
     
-    @Flag var verbose = false
-    @Option(help: "source file extention")
-    var codeFileExt: String = "kt,java,swift,m,mm"
+    @Flag
+    var verbose = false
+    
+    @Flag(help: "indent with the marker")
+    var indent = false
+    
+    @Option(help: "source file name extention")
+    var sourceFileNameExts: String = "kt,java,swift,m,mm"
+    
+    @Option(help: "doucment file name extention")
+    var documentFileNameExts: String = "md"
     
     @Argument(help: "source folder")
     var sourcePath: String
@@ -16,14 +24,14 @@ struct docgen: ParsableCommand {
     var docuemntPath: String
 
     mutating func run() throws {
-        let sourceFiles = listFiles(root: URL(string: sourcePath)!, exts: codeFileExt.split(separator: ",").map { String($0) })
+        let sourceFiles = listFiles(root: URL(string: sourcePath)!, exts: sourceFileNameExts.split(separator: ",").map { String($0) })
         var allTags = [String: String]()
         for file in sourceFiles {
-            let parser = CodeParser(fileUrl: file)
+            let parser = CodeParser(fileUrl: file, indent: indent)
             let tags = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
             allTags.merge(tags)  { (_, new) in new }
         }
-        let docsFilse = listFiles(root: URL(string: docuemntPath)!, exts: ["md"])
+        let docsFilse = listFiles(root: URL(string: docuemntPath)!, exts: documentFileNameExts.split(separator: ",").map { String($0) })
         for file in docsFilse {
             let rewriter = try Rewriter(fileUrl: file)
             for (_, value) in allTags.enumerated() {
