@@ -8,12 +8,20 @@
 import Foundation
 import Regex
 
-internal struct Tag {
+internal class Tag {
     let name: String
     let head: String
     let indent: Bool
     let inline: Bool
     var body: [String]
+    
+    init(name: String, head: String, indent: Bool, inline: Bool, body: [String]) {
+        self.name = name
+        self.head = head
+        self.indent = indent
+        self.inline = inline
+        self.body = body
+    }
     
     func push(container: inout [String: String]) {
         var headSapceCount = 0
@@ -52,26 +60,32 @@ public class CodeParser {
         let lineEndPattern = try Regex(#"\/\/(\s*)"# + end)
         
         var container = [String: String]()
-        var marker: Tag?
+        var markers = [Tag]()
         
         let reader = FileReader(fileUrl)
         while let line = reader?.getLine() {
-            if marker != nil {
-                if !lineEndPattern.match(line).isEmpty {
-                    marker?.push(container: &container)
-                    marker = nil
-                } else {
-                    marker?.body.append(line)
-                }
-            } else {
-                let matchs = lineStartPattern.match(line)
-                if !matchs.isEmpty {
-                    marker = Tag(name: (matchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!,
-                                 head: line, indent: indent, inline: false, body: [])
-                }
+            let startMatchs = lineStartPattern.match(line)
+            if !startMatchs.isEmpty {
+                    markers.append(
+                        Tag(
+                            name: (startMatchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!,
+                            head: line, indent: indent, inline: false, body: [])
+                    )
+                    continue
+            }
+            let endMatchs = lineEndPattern.match(line)
+            if !endMatchs.isEmpty {
+                guard let last = markers.popLast() else { continue }
+                last.push(container: &container)
+                continue
+            }
+            markers.forEach { tag in
+                tag.body.append(line)
             }
         }
-        marker?.push(container: &container)
+        markers.forEach { tag in
+            tag.push(container: &container)
+        }
         return container
     }
 }

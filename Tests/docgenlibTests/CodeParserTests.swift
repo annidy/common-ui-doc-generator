@@ -82,6 +82,25 @@ b
 
 """)
     }
+    
+    func testNest() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+SAMPLE: test
+// SAMPLE: abc
+abc = 1
+// SAMPLE: def
+def = 2
+def = 2
+// SAMPLE END
+abc = 1
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(fileUrl: p1)
+        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        XCTAssertNil(contains["test"])
+        XCTAssertEqual(contains["abc"], "abc = 1\ndef = 2\ndef = 2\nabc = 1\n")
+        XCTAssertEqual(contains["def"], "def = 2\ndef = 2\n")
+    }
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
