@@ -8,8 +8,8 @@ struct docgen: ParsableCommand {
     @Flag
     var verbose = false
     
-    @Flag(help: "indent with the marker")
-    var indent = false
+    @Flag(inversion: .prefixedEnableDisable, help: "indent with the marker")
+    var indent = true
     
     @Option(help: "source file name extention")
     var sourceFileNameExts: String = "kt,java,swift,m,mm"
