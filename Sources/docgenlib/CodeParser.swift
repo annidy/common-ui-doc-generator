@@ -12,18 +12,15 @@ internal class Tag {
     let name: String
     let head: String
     let indent: Bool
-    let inline: Bool
+    let headSapceCount: Int
     var body: [String]
     
-    init(name: String, head: String, indent: Bool, inline: Bool, body: [String]) {
+    init(name: String, head: String, indent: Bool) {
         self.name = name
         self.head = head
         self.indent = indent
-        self.inline = inline
-        self.body = body
-    }
-    
-    func push(container: inout [String: String]) {
+        self.body = []
+        
         var headSapceCount = 0
         for c in head {
             if c.isWhitespace {
@@ -32,16 +29,22 @@ internal class Tag {
                 break
             }
         }
+        self.headSapceCount = headSapceCount
+    }
+    
+    func push(container: inout [String: String]) {
         container[name] = body.map { li in
-            li.trailingTrim(in: .whitespacesAndNewlines)
-        }.map { li in
-            if indent && headSapceCount > 0 && li.count >= headSapceCount {
-                if li.substring(to: li.advanceIndex(li.startIndex, by: headSapceCount)).isWhitesapce() {
-                    return li.substring(from: li.advanceIndex(li.startIndex, by: headSapceCount))
+            if indent && li.count > headSapceCount {
+                let ali = Array(li)
+                for c in ali[0..<headSapceCount] {
+                    if !c.isWhitespace {
+                        return li
+                    }
                 }
+                return String(ali[headSapceCount...])
             }
             return li
-        }.joined(separator: "\n").appending(inline ? "" : "\n")
+        }.joined()
     }
 }
 
@@ -69,7 +72,7 @@ public class CodeParser {
                     markers.append(
                         Tag(
                             name: (startMatchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!,
-                            head: line, indent: indent, inline: false, body: [])
+                            head: line, indent: indent)
                     )
                     continue
             }
@@ -87,23 +90,5 @@ public class CodeParser {
             tag.push(container: &container)
         }
         return container
-    }
-}
-
-extension String {
-
-    func trailingTrim(in characterSet : CharacterSet) -> String {
-        if let range = rangeOfCharacter(from: characterSet, options: [.anchored, .backwards]) {
-            return self.substring(to: range.lowerBound).trailingTrim(in: characterSet)
-        }
-        return self
-    }
-
-    mutating func trailedTrim(in characterSet : CharacterSet) {
-        self = self.trailingTrim(in: characterSet)
-    }
-
-    func isWhitesapce() -> Bool {
-        return self.trimmingCharacters(in: .whitespaces).isEmpty
     }
 }

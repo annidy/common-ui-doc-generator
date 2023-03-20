@@ -28,14 +28,23 @@ SAMPLE: test
 // SAMPLE: abc
 abc = 1
 // SAMPLE END
+// SAMPLE: unicode
+中文处理
+// SAMPLE END
+// SAMPLE: with space
+space
+// SAMPLE END
 // SAMPLE: def
 def = 2
 def = 2
+
 """.write(to: p1, atomically: true, encoding: .utf8)
         parser = CodeParser(fileUrl: p1)
         let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], "abc = 1\n")
+        XCTAssertEqual(contains["unicode"], "中文处理\n")
+        XCTAssertEqual(contains["with space"], "space\n")
         XCTAssertEqual(contains["def"], "def = 2\ndef = 2\n")
     }
     func testIndent() throws {
@@ -44,18 +53,23 @@ def = 2
 // SAMPLE: abc
 if (a) {
     a = 1
+    中文abc
 }
 // SAMPLE END
 {
     // SAMPLE: def
     if (b) {
         b = 1
+        中文abc
+    中文abc
 bbbbb
 bbbb
 bbb
 bb
 b
-
+ c
+  d
+   e
     }
     // SAMPLE END
 }
@@ -66,18 +80,23 @@ b
         XCTAssertEqual(contains["abc"], """
 if (a) {
     a = 1
+    中文abc
 }
 
 """)
         XCTAssertEqual(contains["def"], """
 if (b) {
     b = 1
+    中文
+中文abc
 bbbbb
 bbbb
 bbb
 bb
 b
-
+ c
+  d
+   e
 }
 
 """)
@@ -94,6 +113,7 @@ def = 2
 def = 2
 // SAMPLE END
 abc = 1
+
 """.write(to: p1, atomically: true, encoding: .utf8)
         parser = CodeParser(fileUrl: p1)
         let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
