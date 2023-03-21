@@ -87,7 +87,7 @@ if (a) {
         XCTAssertEqual(contains["def"], """
 if (b) {
     b = 1
-    中文
+    中文abc
 中文abc
 bbbbb
 bbbb
