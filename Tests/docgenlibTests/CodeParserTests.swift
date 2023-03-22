@@ -21,7 +21,7 @@ final class CodeParserTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testMarker() throws {
+    func testLineComment() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
 SAMPLE: test
@@ -127,6 +127,24 @@ abc = 1
         self.measure {
             // Put the code you want to measure the time of here.
         }
+    }
+    
+    func testInLineComment() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+/* SAMPLE: test */ abc = 1 /* SAMPLE END */ aaaa /*SAMPLE:567*/5678/*SAMPLE END*/
+/* /* SAMPLE: 123 */1234/* SAMPLE END */ */
+/* SAMPLE: a-b */ a-b /* SAMPLE END */
+/* SAMPLE: a_b */ a_b /* SAMPLE END */
+/
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(fileUrl: p1)
+        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        XCTAssertEqual(contains["test"], " abc = 1 ")
+        XCTAssertEqual(contains["123"], "1234")
+        XCTAssertEqual(contains["567"], "5678")
+        XCTAssertEqual(contains["a-b"], " a-b ")
+        XCTAssertEqual(contains["a_b"], " a_b ")
     }
 
 }

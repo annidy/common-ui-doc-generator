@@ -6,89 +6,38 @@
 //
 
 import Foundation
-import Regex
 
-internal class Tag {
-    let name: String
-    let head: String
-    let indent: Bool
-    let headSapceCount: Int
-    var body: [String]
-    
-    init(name: String, head: String, indent: Bool) {
-        self.name = name
-        self.head = head
-        self.indent = indent
-        self.body = []
-        
-        var headSapceCount = 0
-        for c in head {
-            if c.isWhitespace {
-                headSapceCount += 1
-            } else {
-                break
-            }
-        }
-        self.headSapceCount = headSapceCount
-    }
-    
-    func push(container: inout [String: String]) {
-        container[name] = body.map { li in
-            if indent && li.count > headSapceCount {
-                let ali = Array(li)
-                for c in ali[0..<headSapceCount] {
-                    if !c.isWhitespace {
-                        return li
-                    }
-                }
-                return String(ali[headSapceCount...])
-            }
-            return li
-        }.joined()
-    }
+protocol Parser {
+    func parseTag(start: String, end: String) throws -> [String: String] 
 }
 
 public class CodeParser {
-    let fileUrl: URL
-    var indent: Bool = true
+    var lineParser: LineCommentParser?
+    var inlineParser: InlineCommentParser?
     
-    public init(fileUrl: URL, indent: Bool = true) {
-        self.fileUrl = fileUrl
-        self.indent = indent
+    public init(fileUrl: URL) {
+        self.lineParser = LineCommentParser(fileUrl: fileUrl)
+        self.inlineParser = InlineCommentParser(fileUrl: fileUrl)
     }
     
+    public var lineIndent: Bool {
+        get {
+            self.lineParser?.indent ?? false
+        }
+        set {
+            self.lineParser?.indent = newValue
+        }
+    }
     
-    public func parseTag(start: String, end: String) throws ->  [String: String]  {
-        let lineStartPattern = try Regex(#"\/\/(\s*)"# + start + ":(.*)")
-        let lineEndPattern = try Regex(#"\/\/(\s*)"# + end)
-        
+    public func parseTag(start: String, end: String) throws -> [String: String]  {
         var container = [String: String]()
-        var markers = [Tag]()
+        if let paser = self.lineParser {
+            container.merge(try paser.parseTag(start: start, end: end), uniquingKeysWith: +)
+        }
+        if let paser = self.inlineParser {
+            container.merge(try paser.parseTag(start: start, end: end), uniquingKeysWith: +)
+        }
         
-        let reader = FileReader(fileUrl)
-        while let line = reader?.getLine() {
-            let startMatchs = lineStartPattern.match(line)
-            if !startMatchs.isEmpty {
-                    markers.append(
-                        Tag(
-                            name: (startMatchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!,
-                            head: line, indent: indent)
-                    )
-                    continue
-            }
-            let endMatchs = lineEndPattern.match(line)
-            if !endMatchs.isEmpty {
-                guard let last = markers.popLast() else { continue }
-                last.push(container: &container)
-                continue
-            }
-            markers.forEach { tag in
-                tag.body.append(line)
-            }
-        }
-        markers.forEach { tag in
-            tag.push(container: &container)
-        }
         return container
     }
 }
