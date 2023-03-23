@@ -33,7 +33,7 @@ private class Tag {
     }
     
     func push(container: inout [String: String]) {
-        container[name] = body.map { li in
+        container[name] = (container[name] ?? "") + body.map { li in
             if indent && li.count > headSapceCount {
                 let ali = Array(li)
                 for c in ali[0..<headSapceCount] {
@@ -57,8 +57,8 @@ public class LineCommentParser {
     }
     
     public func parseTag(start: String, end: String) throws ->  [String: String]  {
-        let lineStartPattern = try Regex(#"\/\/(\s*)"# + start + ":([- 0-9a-zA-Z_]+)")
-        let lineEndPattern = try Regex(#"\/\/(\s*)"# + end)
+        let lineStartPattern = try Regex(#"\s*\/\/(\s*)"# + start + ":([- 0-9a-zA-Z_]+)")
+        let lineEndPattern = try Regex(#"\s*\/\/(\s*)"# + end)
         
         var container = [String: String]()
         var markers = [Tag]()

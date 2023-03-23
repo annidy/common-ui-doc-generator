@@ -146,5 +146,31 @@ abc = 1
         XCTAssertEqual(contains["a-b"], " a-b ")
         XCTAssertEqual(contains["a_b"], " a_b ")
     }
+    
+    func testJoinComment1() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+// SAMPLE: test
+abc
+// SAMPLE END
+// SAMPLE: test
+def
+// SAMPLE END
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(fileUrl: p1)
+        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        XCTAssertEqual(contains["test"], "abc\ndef\n")
+    }
+    
+    func testJoinComment2() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+/* SAMPLE: test */abc/* SAMPLE END */
+/* SAMPLE: test */def/* SAMPLE END */
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(fileUrl: p1)
+        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        XCTAssertEqual(contains["test"], "abc\ndef")
+    }
 
 }

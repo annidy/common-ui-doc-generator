@@ -1,5 +1,5 @@
 //
-//  InlineCommentParser.swift
+//  BlockCommentParser.swift
 //  
 //
 //  Created by annidy on 2023/3/22.
@@ -8,7 +8,7 @@
 import Foundation
 import Regex
 
-public class InlineCommentParser {
+public class BlockCommentParser {
     let fileUrl: URL
     
     public init(fileUrl: URL) {
@@ -34,7 +34,7 @@ public class InlineCommentParser {
                 let mta = startMatchs[i], mte = endMatchs[i]
                 let name = mta.groups.last!.trimmingCharacters(in: .whitespaces)
                 let body = String(Array(line)[mta.range.upperBound..<mte.range.lowerBound])
-                container[name] = body
+                container[name] = [container[name], body].compactMap {$0}.joined(separator: "\n")
             }
         }
         return container

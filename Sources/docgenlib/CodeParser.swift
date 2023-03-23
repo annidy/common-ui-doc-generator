@@ -13,11 +13,11 @@ protocol Parser {
 
 public class CodeParser {
     var lineParser: LineCommentParser?
-    var inlineParser: InlineCommentParser?
+    var inlineParser: BlockCommentParser?
     
     public init(fileUrl: URL) {
         self.lineParser = LineCommentParser(fileUrl: fileUrl)
-        self.inlineParser = InlineCommentParser(fileUrl: fileUrl)
+        self.inlineParser = BlockCommentParser(fileUrl: fileUrl)
     }
     
     public var lineIndent: Bool {
@@ -32,10 +32,14 @@ public class CodeParser {
     public func parseTag(start: String, end: String) throws -> [String: String]  {
         var container = [String: String]()
         if let paser = self.lineParser {
-            container.merge(try paser.parseTag(start: start, end: end), uniquingKeysWith: +)
+            container.merge(try paser.parseTag(start: start, end: end)) { l, r in
+                l + "\n" + r
+            }
         }
         if let paser = self.inlineParser {
-            container.merge(try paser.parseTag(start: start, end: end), uniquingKeysWith: +)
+            container.merge(try paser.parseTag(start: start, end: end))  { l, r in
+                l + "\n" + r
+            }
         }
         
         return container
