@@ -156,7 +156,7 @@ def = 2 // SAMPLE: test
 """.write(to: p1, atomically: true, encoding: .utf8)
         parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
         let contains = try parser.parse(fileUrl: p1)
-        XCTAssertEqual(contains["test"], "abc = 1\ndef = 2")
+        XCTAssertEqual(contains["test"], "abc = 1\ndef = 2\n")
     }
     
     func testJoinComment() throws {
@@ -174,7 +174,7 @@ def
 """.write(to: p1, atomically: true, encoding: .utf8)
         parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
         let contains = try parser.parse(fileUrl: p1)
-        XCTAssertEqual(contains["test"], "123abc\n\nghkdef\n\n456")
+        XCTAssertEqual(contains["test"], "123\nabc\nghk\ndef\n456")
     }
 
 }

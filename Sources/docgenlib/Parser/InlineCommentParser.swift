@@ -27,7 +27,7 @@ public class InlineCommentParser: Parser {
                 continue
             }
             let name = (startMatchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!
-            container[name] = [container[name], String(prefix).trimmingCharacters(in: .whitespaces)].compactMap {$0}.joined(separator: "\n")
+            container.join(text: String(prefix).trimmingCharacters(in: .whitespaces) + "\n", forTag: name)
             break
         }
     }

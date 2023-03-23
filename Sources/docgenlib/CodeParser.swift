@@ -40,7 +40,15 @@ public class CodeParser {
 }
 
 extension Dictionary where Key == String, Value == String {
-    mutating func joinTag(stringOptinal optional : String?, forStringKey stringKey : String) {
-        self[stringKey] = [self[stringKey], optional].compactMap { $0 }.joined(separator: "\n")
+    mutating func join(text value: String, forTag tag: String) {
+        if let exist = self[tag] {
+            if exist.last == "\n" {
+                self[tag] = exist + value
+            } else {
+                self[tag] = exist + "\n" + value
+            }
+        } else {
+            self[tag] = value
+        }
     }
 }

@@ -33,7 +33,7 @@ private class Tag {
     }
     
     func push(container: inout [String: String]) {
-        container[name] = (container[name] ?? "") + body.map { li in
+        let text = body.map { li in
             if indent && li.count > headSapceCount {
                 let ali = Array(li)
                 for c in ali[0..<headSapceCount] {
@@ -45,6 +45,7 @@ private class Tag {
             }
             return li
         }.joined()
+        container.join(text: text, forTag: name)
     }
 }
 

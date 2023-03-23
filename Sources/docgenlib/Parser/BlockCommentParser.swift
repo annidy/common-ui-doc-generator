@@ -29,7 +29,7 @@ public class BlockCommentParser: Parser {
             let mta = startMatchs[i], mte = endMatchs[i]
             let name = mta.groups.last!.trimmingCharacters(in: .whitespaces)
             let body = String(Array(line)[mta.range.upperBound..<mte.range.lowerBound])
-            container[name] = [container[name], body].compactMap {$0}.joined(separator: "\n")
+            container.join(text: body, forTag: name)
         }
     }
 }
