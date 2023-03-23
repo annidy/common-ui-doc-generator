@@ -48,45 +48,35 @@ private class Tag {
     }
 }
 
-public class LineCommentParser {
-    let fileUrl: URL
+public class LineCommentParser: Parser {
+    let lineStartPattern: Regex
+    let lineEndPattern: Regex
+    fileprivate var markers = [Tag]()
     public var indent: Bool = true
     
-    public init(fileUrl: URL) {
-        self.fileUrl = fileUrl
+    public init(tagStart: String, tagEnd: String) throws {
+        lineStartPattern = try Regex(#"\s*\/\/(\s*)"# + tagStart + ":([- 0-9a-zA-Z_]+)")
+        lineEndPattern = try Regex(#"\s*\/\/(\s*)"# + tagEnd)
     }
     
-    public func parseTag(start: String, end: String) throws ->  [String: String]  {
-        let lineStartPattern = try Regex(#"\s*\/\/(\s*)"# + start + ":([- 0-9a-zA-Z_]+)")
-        let lineEndPattern = try Regex(#"\s*\/\/(\s*)"# + end)
-        
-        var container = [String: String]()
-        var markers = [Tag]()
-        
-        let reader = FileReader(fileUrl)
-        while let line = reader?.getLine() {
-            let startMatchs = lineStartPattern.match(line)
-            if !startMatchs.isEmpty {
-                    markers.append(
-                        Tag(
-                            name: (startMatchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!,
-                            head: line, indent: indent)
-                    )
-                    continue
-            }
-            let endMatchs = lineEndPattern.match(line)
-            if !endMatchs.isEmpty {
-                guard let last = markers.popLast() else { continue }
-                last.push(container: &container)
-                continue
-            }
-            markers.forEach { tag in
-                tag.body.append(line)
-            }
+    public func parseLine(line: String, container: inout [String: String]) {
+        let startMatchs = lineStartPattern.match(line)
+        if !startMatchs.isEmpty {
+            markers.append(
+                Tag(
+                    name: (startMatchs[0].groups.last?.trimmingCharacters(in: .whitespaces))!,
+                    head: line, indent: indent)
+            )
+            return
+        }
+        let endMatchs = lineEndPattern.match(line)
+        if !endMatchs.isEmpty {
+            guard let last = markers.popLast() else { return }
+            last.push(container: &container)
+            return
         }
         markers.forEach { tag in
-            tag.push(container: &container)
+            tag.body.append(line)
         }
-        return container
     }
 }

@@ -8,40 +8,39 @@
 import Foundation
 
 protocol Parser {
-    func parseTag(start: String, end: String) throws -> [String: String] 
+    func parseLine(line: String, container: inout [String: String])
 }
 
 public class CodeParser {
-    var lineParser: LineCommentParser?
-    var inlineParser: BlockCommentParser?
+    var tagStart: String
+    var tagEnd: String
+    var lineIndenet: Bool
     
-    public init(fileUrl: URL) {
-        self.lineParser = LineCommentParser(fileUrl: fileUrl)
-        self.inlineParser = BlockCommentParser(fileUrl: fileUrl)
+    public init(tagStart: String, tagEnd: String, lineIndenet: Bool = true) {
+        self.tagStart = tagStart
+        self.tagEnd = tagEnd
+        self.lineIndenet = lineIndenet
     }
     
-    public var lineIndent: Bool {
-        get {
-            self.lineParser?.indent ?? false
-        }
-        set {
-            self.lineParser?.indent = newValue
-        }
-    }
-    
-    public func parseTag(start: String, end: String) throws -> [String: String]  {
+    public func parse(fileUrl: URL) throws -> [String: String]  {
+        let parsers: [Parser?] = [
+            try? LineCommentParser(tagStart: tagStart, tagEnd: tagStart),
+            try? BlockCommentParser(tagStart: tagStart, tagEnd: tagEnd),
+            try? InlineCommentParser(tagStart: tagStart)
+        ]
         var container = [String: String]()
-        if let paser = self.lineParser {
-            container.merge(try paser.parseTag(start: start, end: end)) { l, r in
-                l + "\n" + r
+        let reader = FileReader(fileUrl)
+        while let line = reader?.getLine() {
+            for parser in parsers {
+                parser?.parseLine(line: line, container: &container)
             }
         }
-        if let paser = self.inlineParser {
-            container.merge(try paser.parseTag(start: start, end: end))  { l, r in
-                l + "\n" + r
-            }
-        }
-        
         return container
+    }
+}
+
+extension Dictionary where Key == String, Value == String {
+    mutating func joinTag(stringOptinal optional : String?, forStringKey stringKey : String) {
+        self[stringKey] = [self[stringKey], optional].compactMap { $0 }.joined(separator: "\n")
     }
 }

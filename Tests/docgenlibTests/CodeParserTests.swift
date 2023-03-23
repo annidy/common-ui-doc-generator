@@ -37,10 +37,10 @@ space
 // SAMPLE: def
 def = 2
 def = 2
-
+// SAMPLE END
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(fileUrl: p1)
-        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        let contains = try parser.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], "abc = 1\n")
         XCTAssertEqual(contains["unicode"], "中文处理\n")
@@ -74,8 +74,8 @@ b
     // SAMPLE END
 }
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(fileUrl: p1)
-        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        let contains = try parser.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], """
 if (a) {
@@ -113,10 +113,10 @@ def = 2
 def = 2
 // SAMPLE END
 abc = 1
-
+// SAMPLE END
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(fileUrl: p1)
-        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        let contains = try parser.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], "abc = 1\ndef = 2\ndef = 2\nabc = 1\n")
         XCTAssertEqual(contains["def"], "def = 2\ndef = 2\n")
@@ -129,7 +129,7 @@ abc = 1
         }
     }
     
-    func testInLineComment() throws {
+    func testBlockComment() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
 /* SAMPLE: test */ abc = 1 /* SAMPLE END */ aaaa /*SAMPLE:567*/5678/*SAMPLE END*/
@@ -138,8 +138,8 @@ abc = 1
 /* SAMPLE: a_b */ a_b /* SAMPLE END */
 /
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(fileUrl: p1)
-        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        let contains = try parser.parse(fileUrl: p1)
         XCTAssertEqual(contains["test"], " abc = 1 ")
         XCTAssertEqual(contains["123"], "1234")
         XCTAssertEqual(contains["567"], "5678")
@@ -147,30 +147,34 @@ abc = 1
         XCTAssertEqual(contains["a_b"], " a_b ")
     }
     
-    func testJoinComment1() throws {
+    func testInLineComment() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
+abc = 1 // SAMPLE: test
+def = 2 // SAMPLE: test
+/
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        let contains = try parser.parse(fileUrl: p1)
+        XCTAssertEqual(contains["test"], "abc = 1\ndef = 2")
+    }
+    
+    func testJoinComment() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+/* SAMPLE: test */123/* SAMPLE END */
 // SAMPLE: test
 abc
 // SAMPLE END
+ghk // SAMPLE: test
 // SAMPLE: test
 def
 // SAMPLE END
+/* SAMPLE: test */456/* SAMPLE END */
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(fileUrl: p1)
-        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
-        XCTAssertEqual(contains["test"], "abc\ndef\n")
-    }
-    
-    func testJoinComment2() throws {
-        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
-        try """
-/* SAMPLE: test */abc/* SAMPLE END */
-/* SAMPLE: test */def/* SAMPLE END */
-""".write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(fileUrl: p1)
-        let contains = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
-        XCTAssertEqual(contains["test"], "abc\ndef")
+        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        let contains = try parser.parse(fileUrl: p1)
+        XCTAssertEqual(contains["test"], "123abc\n\nghkdef\n\n456")
     }
 
 }

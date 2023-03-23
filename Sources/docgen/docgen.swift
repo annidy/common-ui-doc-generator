@@ -27,9 +27,8 @@ struct docgen: ParsableCommand {
         let sourceFiles = listFiles(root: URL(string: sourcePath)!, exts: sourceFileNameExts.split(separator: ",").map { String($0) })
         var allTags = [String: String]()
         for file in sourceFiles {
-            let parser = CodeParser(fileUrl: file)
-            parser.lineIndent = indent
-            let tags = try parser.parseTag(start: "SAMPLE", end: "SAMPLE END")
+            let parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END", lineIndenet: indent)
+            let tags = try parser.parse(fileUrl: file)
             allTags.merge(tags)  { (_, new) in new }
         }
         let docsFilse = listFiles(root: URL(string: docuemntPath)!, exts: documentFileNameExts.split(separator: ",").map { String($0) })
