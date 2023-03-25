@@ -12,21 +12,23 @@ protocol Parser {
 }
 
 public class CodeParser {
-    var tagStart: String
-    var tagEnd: String
-    var lineIndenet: Bool
+    var tagName: String
+    var lineIndent: Bool
     
-    public init(tagStart: String, tagEnd: String, lineIndenet: Bool = true) {
-        self.tagStart = tagStart
-        self.tagEnd = tagEnd
-        self.lineIndenet = lineIndenet
+    public init(tagName: String, lineIndent: Bool = true) {
+        self.tagName = tagName
+        self.lineIndent = lineIndent
     }
     
     public func parse(fileUrl: URL) throws -> [String: String]  {
         let parsers: [Parser?] = [
-            try? LineCommentParser(tagStart: tagStart, tagEnd: tagStart),
-            try? BlockCommentParser(tagStart: tagStart, tagEnd: tagEnd),
-            try? InlineCommentParser(tagStart: tagStart)
+            {
+                let p: LineCommentParser? = try? LineCommentParser(tagName: tagName)
+                p?.indent = lineIndent
+                return p as Parser?
+            }(),
+            try? BlockCommentParser(tagName: tagName),
+            try? InlineCommentParser(tagName: tagName)
         ]
         var container = [String: String]()
         let reader = FileReader(fileUrl)

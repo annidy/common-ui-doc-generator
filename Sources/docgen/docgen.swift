@@ -8,8 +8,11 @@ struct docgen: ParsableCommand {
     @Flag
     var verbose = false
     
-    @Flag(inversion: .prefixedEnableDisable, help: "indent with the comment")
+    @Flag(inversion: .prefixedEnableDisable, help: "indent with codetag")
     var indent = true
+    
+    @Option(help: "codetag")
+    var codetag = "SAMPLE"
     
     @Option(help: "source file name extention")
     var sourceFileNameExts: String = "kt,java,swift,m,mm"
@@ -27,7 +30,7 @@ struct docgen: ParsableCommand {
         let sourceFiles = listFiles(root: URL(string: sourcePath)!, exts: sourceFileNameExts.split(separator: ",").map { String($0) })
         var allTags = [String: String]()
         for file in sourceFiles {
-            let parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END", lineIndenet: indent)
+            let parser = CodeParser(tagName: codetag, lineIndent: indent)
             let tags = try parser.parse(fileUrl: file)
             allTags.merge(tags)  { (_, new) in new }
         }

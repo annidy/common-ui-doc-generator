@@ -12,9 +12,9 @@ public class BlockCommentParser: Parser {
     let lineStartPattern: Regex
     let lineEndPattern: Regex
     
-    public init(tagStart: String, tagEnd: String) throws {
-        lineStartPattern = try Regex(#"\/\*(\s*)"# + tagStart + #":([- 0-9a-zA-Z_]+)\*\/"#)
-        lineEndPattern = try Regex(#"\/\*(\s*)"# + tagEnd + #"(\s*)\*\/"#)
+    public init(tagName: String) throws {
+        lineStartPattern = try Regex(#"\/\*(\s*)"# + tagName + #":([- 0-9a-zA-Z_]+)\*\/"#)
+        lineEndPattern = try Regex(#"\/\*(\s*)"# + tagName + #"(\s*)\*\/"#)
     }
     
     

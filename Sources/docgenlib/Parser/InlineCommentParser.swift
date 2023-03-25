@@ -11,8 +11,8 @@ import Regex
 public class InlineCommentParser: Parser {
     let lineStartPattern: Regex
     
-    public init(tagStart: String) throws {
-        lineStartPattern = try Regex(#"\/\/(\s*)"# + tagStart + ":([- 0-9a-zA-Z_]+)")
+    public init(tagName: String) throws {
+        lineStartPattern = try Regex(#"\/\/(\s*)"# + tagName + ":([- 0-9a-zA-Z_]+)")
     }
     
     

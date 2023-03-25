@@ -20,6 +20,20 @@ final class CodeParserTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
+    
+    func testLineCommentCompatibility() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+SAMPLE: test
+// SAMPLE: abc
+abc = 1
+// SAMPLE END
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(tagName: "SAMPLE")
+        let contains = try parser.parse(fileUrl: p1)
+        XCTAssertNil(contains["test"])
+        XCTAssertEqual(contains["abc"], "abc = 1\n")
+    }
 
     func testLineComment() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
@@ -27,19 +41,19 @@ final class CodeParserTests: XCTestCase {
 SAMPLE: test
 // SAMPLE: abc
 abc = 1
-// SAMPLE END
+// SAMPLE
 // SAMPLE: unicode
 中文处理
-// SAMPLE END
+// SAMPLE
 // SAMPLE: with space
 space
-// SAMPLE END
+// SAMPLE
 // SAMPLE: def
 def = 2
 def = 2
-// SAMPLE END
+// SAMPLE
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        parser = CodeParser(tagName: "SAMPLE")
         let contains = try parser.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], "abc = 1\n")
@@ -55,7 +69,7 @@ if (a) {
     a = 1
     中文abc
 }
-// SAMPLE END
+// SAMPLE
 {
     // SAMPLE: def
     if (b) {
@@ -71,10 +85,10 @@ b
   d
    e
     }
-    // SAMPLE END
+    // SAMPLE
 }
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        parser = CodeParser(tagName: "SAMPLE")
         let contains = try parser.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], """
@@ -102,6 +116,20 @@ b
 """)
     }
     
+    func testNoIndent() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+    // SAMPLE: abc
+    if (a) {
+        a = 1
+    }
+    // SAMPLE
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(tagName: "SAMPLE", lineIndent: false)
+        let contains = try parser.parse(fileUrl: p1)
+        XCTAssertEqual(contains["abc"], "    if (a) {\n        a = 1\n    }\n")
+    }
+    
     func testNest() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
@@ -111,11 +139,11 @@ abc = 1
 // SAMPLE: def
 def = 2
 def = 2
-// SAMPLE END
+// SAMPLE
 abc = 1
-// SAMPLE END
+// SAMPLE
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        parser = CodeParser(tagName: "SAMPLE")
         let contains = try parser.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
         XCTAssertEqual(contains["abc"], "abc = 1\ndef = 2\ndef = 2\nabc = 1\n")
@@ -132,13 +160,13 @@ abc = 1
     func testBlockComment() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
-/* SAMPLE: test */ abc = 1 /* SAMPLE END */ aaaa /*SAMPLE:567*/5678/*SAMPLE END*/
-/* /* SAMPLE: 123 */1234/* SAMPLE END */ */
-/* SAMPLE: a-b */ a-b /* SAMPLE END */
-/* SAMPLE: a_b */ a_b /* SAMPLE END */
+/* SAMPLE: test */ abc = 1 /* SAMPLE */ aaaa /*SAMPLE:567*/5678/*SAMPLE*/
+/* /* SAMPLE: 123 */1234/* SAMPLE */ */
+/* SAMPLE: a-b */ a-b /* SAMPLE */
+/* SAMPLE: a_b */ a_b /* SAMPLE */
 /
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        parser = CodeParser(tagName: "SAMPLE")
         let contains = try parser.parse(fileUrl: p1)
         XCTAssertEqual(contains["test"], " abc = 1 ")
         XCTAssertEqual(contains["123"], "1234")
@@ -154,7 +182,7 @@ abc = 1 // SAMPLE: test
 def = 2 // SAMPLE: test
 /
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        parser = CodeParser(tagName: "SAMPLE")
         let contains = try parser.parse(fileUrl: p1)
         XCTAssertEqual(contains["test"], "abc = 1\ndef = 2\n")
     }
@@ -162,17 +190,17 @@ def = 2 // SAMPLE: test
     func testJoinComment() throws {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
-/* SAMPLE: test */123/* SAMPLE END */
+/* SAMPLE: test */123/* SAMPLE */
 // SAMPLE: test
 abc
-// SAMPLE END
+// SAMPLE
 ghk // SAMPLE: test
 // SAMPLE: test
 def
-// SAMPLE END
-/* SAMPLE: test */456/* SAMPLE END */
+// SAMPLE
+/* SAMPLE: test */456/* SAMPLE */
 """.write(to: p1, atomically: true, encoding: .utf8)
-        parser = CodeParser(tagStart: "SAMPLE", tagEnd: "SAMPLE END")
+        parser = CodeParser(tagName: "SAMPLE")
         let contains = try parser.parse(fileUrl: p1)
         XCTAssertEqual(contains["test"], "123\nabc\nghk\ndef\n456")
     }

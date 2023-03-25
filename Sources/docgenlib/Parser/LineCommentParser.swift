@@ -55,9 +55,9 @@ public class LineCommentParser: Parser {
     fileprivate var markers = [Tag]()
     public var indent: Bool = true
     
-    public init(tagStart: String, tagEnd: String) throws {
-        lineStartPattern = try Regex(#"\s*\/\/(\s*)"# + tagStart + ":([- 0-9a-zA-Z_]+)")
-        lineEndPattern = try Regex(#"\s*\/\/(\s*)"# + tagEnd)
+    public init(tagName: String) throws {
+        lineStartPattern = try Regex(#"\s*\/\/(\s*)"# + tagName + ":([- 0-9a-zA-Z_]+)")
+        lineEndPattern = try Regex(#"\s*\/\/(\s*)"# + tagName)
     }
     
     public func parseLine(line: String, container: inout [String: String]) {
