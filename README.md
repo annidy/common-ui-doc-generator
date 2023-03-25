@@ -1,3 +1,3 @@
-# common-ui-doc-generator
+# docgen
 
 A description of this package.
