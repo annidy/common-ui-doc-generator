@@ -205,4 +205,18 @@ def
         XCTAssertEqual(contains["test"], "123\nabc\nghk\ndef\n456")
     }
 
+    func testXMLComment() throws {
+        let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
+        try """
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--SAMPLE:abc-->
+<class_list>
+</class_list>
+<!--SAMPLE-->
+""".write(to: p1, atomically: true, encoding: .utf8)
+        parser = CodeParser(tagName: "SAMPLE")
+        let contains = try parser.parse(fileUrl: p1)
+        XCTAssertNil(contains["test"])
+        XCTAssertEqual(contains["abc"], "<class_list>\n</class_list>\n")
+    }
 }

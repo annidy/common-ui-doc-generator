@@ -28,7 +28,8 @@ public class CodeParser {
                 return p as Parser?
             }(),
             try? BlockCommentParser(tagName: tagName),
-            try? InlineCommentParser(tagName: tagName)
+            try? InlineCommentParser(tagName: tagName),
+            try? XMLCommentParser(tagName: tagName)
         ]
         var container = [String: String]()
         let reader = FileReader(fileUrl)
