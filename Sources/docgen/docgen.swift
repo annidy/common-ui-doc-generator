@@ -15,7 +15,7 @@ struct docgen: ParsableCommand {
     var codetag = "SAMPLE"
     
     @Option(help: "source file name extention")
-    var sourceFileNameExts: String = "kt,java,swift,m,mm"
+    var sourceFileNameExts: String = "kt,java,swift,m,mm,xml,c,cpp"
     
     @Option(help: "doucment file name extention")
     var documentFileNameExts: String = "md"
