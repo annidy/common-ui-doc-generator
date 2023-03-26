@@ -12,7 +12,7 @@ public class InlineCommentParser: Parser {
     let lineStartPattern: Regex
     
     public init(tagName: String) throws {
-        lineStartPattern = try Regex(#"\/\/(\s*)"# + tagName + ":([- 0-9a-zA-Z_]+)")
+        lineStartPattern = try Regex(#"\/{2,}(\s*)"# + tagName + ":([- 0-9a-zA-Z_]+)")
     }
     
     

@@ -25,7 +25,7 @@ final class CodeParserTests: XCTestCase {
         let p1 = FileManager.default.temporaryDirectory.appendingPathComponent("p1.txt")
         try """
 SAMPLE: test
-// SAMPLE: abc
+/// SAMPLE: abc
 abc = 1
 // SAMPLE END
 """.write(to: p1, atomically: true, encoding: .utf8)
