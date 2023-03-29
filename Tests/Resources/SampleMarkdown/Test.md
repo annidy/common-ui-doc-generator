@@ -1,6 +1,6 @@
 
 
-{{METHODS}}
+{{METHOD:Bicycle}}
 
 
-{{ATTRIBUTES}}
+{{ATTRIBUTE:Bicycle}}

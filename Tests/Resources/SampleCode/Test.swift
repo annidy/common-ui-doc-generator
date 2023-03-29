@@ -39,8 +39,9 @@ class Bicycle {
         case bullhorn
     }
 
-    /// ATTRIBUTE: Test.style
+    /// ATTRIBUTE: Bicycle.style
     /// The style of the bicycle.
+    /// - Value: `road`, `touring`, `cruiser`, `hybrid`
     let style: Style
 
     /// The gearing of the bicycle.
@@ -52,7 +53,7 @@ class Bicycle {
     /// The size of the frame, in centimeters.
     let frameSize: Int
 
-    /// ATTRIBUTE: Test.numberOfTrips
+    /// ATTRIBUTE: Bicycle.numberOfTrips
     /// The number of trips traveled by the bicycle.
     private(set) var numberOfTrips: Int
 
@@ -60,7 +61,7 @@ class Bicycle {
     /// The total distance traveled by the bicycle, in meters.
     private(set) var distanceTraveled: Double
 
-    /// METHOD: Test.init
+    /// METHOD: Bicycle.init
     /**
      Initializes a new bicycle with the provided parts and specifications.
 
@@ -88,7 +89,7 @@ class Bicycle {
         self.distanceTraveled = 0
     }
 
-    /// METHOD: Test.travel
+    /// METHOD: Bicycle.travel
     /**
      Take a bike out for a spin.
 

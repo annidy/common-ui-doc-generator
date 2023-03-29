@@ -15,8 +15,8 @@ struct DocAttributeItem {
 
 public class DocTableGenerator {
 
-    var methodItems: [DocMethodItem] = []
-    var attributeItems: [DocAttributeItem] = []
+    private var methodItems: [DocMethodItem] = []
+    private var attributeItems: [DocAttributeItem] = []
 
     public init() {
         
@@ -76,7 +76,10 @@ public class DocTableGenerator {
         attributeItems.append(item)
     }
 
-    public func methodsTable() -> String {
+    public func methodsTable() -> String? {
+        if methodItems.isEmpty {
+            return nil
+        }
         var result = "| Method | Description | Parameter |\n"
         result += "| --- | --- | --- |\n"
         for item in methodItems {
@@ -85,7 +88,10 @@ public class DocTableGenerator {
         return result
     }
 
-    public func attributesTable() -> String {
+    public func attributesTable() -> String? {
+        if attributeItems.isEmpty {
+           return nil 
+        }
         var result = "| Attribute | Description | Default value |\n"
         result += "| --- | --- | --- |\n"
         for item in attributeItems {
