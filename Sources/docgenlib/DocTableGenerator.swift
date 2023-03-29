@@ -33,17 +33,19 @@ public class DocTableGenerator {
             var header = Array("@param")
             if newGenerator.next(header.count) == header {
                 newGenerator.skipWhitespace()
-                item.parameters.append(String(newGenerator.remaining()))
+                let paramString = "`\(newGenerator.nextWord() ?? ""):`" + newGenerator.remaining()
+                item.parameters.append(paramString)
                 continue
             }
             newGenerator = paramGenerator
             header = Array("- Parameters:")
             if newGenerator.next(header.count) == header {
-                while var newParam = generator.nextLine()?.generator() {
-                    newParam.skipWhitespace()
-                    if newParam.next() == "-" {
-                        newParam.skipWhitespace()
-                        item.parameters.append(String(newParam.remaining()))
+                while var newParamGenerator = generator.nextLine()?.generator() {
+                    newParamGenerator.skipWhitespace()
+                    if newParamGenerator.next() == "-" {
+                        newParamGenerator.skipWhitespace()
+                        let paramString = "`\(newParamGenerator.nextWord() ?? "")`" + newParamGenerator.remaining()
+                        item.parameters.append(paramString)
                     } else {
                         break
                     }
@@ -92,7 +94,7 @@ public class DocTableGenerator {
         if attributeItems.isEmpty {
            return nil 
         }
-        var result = "| Attribute | Description | Default value |\n"
+        var result = "| Attribute | Description | Value |\n"
         result += "| --- | --- | --- |\n"
         for item in attributeItems {
             result += "| \(item.name) | \(item.shortDescription ?? "") | \(item.defaultValue ?? "") |\n"
@@ -111,6 +113,18 @@ extension Generator where Container == String {
         while let next = self.next(), next != "\n" {
             line.append(next)
         }
+        return line
+    }
+    
+    public mutating func nextWord() -> String? {
+        if self.atEnd {
+            return nil
+        }
+        var line = ""
+        while let next = self.next(), next != " " {
+            line.append(next)
+        }
+        self.reverse()
         return line
     }
 
