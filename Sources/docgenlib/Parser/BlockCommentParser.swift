@@ -18,7 +18,7 @@ public class BlockCommentParser: Parser {
     }
     
     
-    public func parseLine(line: String, container: inout [String: String]) {
+    public func parseLine(line: String, container: inout [String: [String]]) {
         let startMatchs = lineStartPattern.match(line)
         let endMatchs = lineEndPattern.match(line)
         if startMatchs.count != endMatchs.count {

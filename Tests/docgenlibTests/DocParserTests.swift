@@ -28,11 +28,14 @@ final class DocParserTests: XCTestCase {
 /// abc
 /// def
 abc()
+/// SAMPLE: abc
+/// kkk
+abc()
 """.write(to: p1, atomically: true, encoding: .utf8)
         sut = DocParser(tagName: "SAMPLE")
         let contains = try sut.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
-        XCTAssertEqual(contains["abc"], "abc\ndef\n")
+        XCTAssertEqual(contains["abc"], ["abc\ndef\n", "kkk\n"])
     }
     
     func testBlockComment() throws {
@@ -53,8 +56,8 @@ def
         sut = DocParser(tagName: "SAMPLE")
         let contains = try sut.parse(fileUrl: p1)
         XCTAssertNil(contains["test"])
-        XCTAssertEqual(contains["abc"], "abc\ndef\n")
-        XCTAssertEqual(contains["def"], "abc\ndef\n")
+        XCTAssertEqual(contains["abc"], ["abc\ndef\n"])
+        XCTAssertEqual(contains["def"], ["abc\ndef\n"])
     }
 
 

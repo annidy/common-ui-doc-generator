@@ -16,7 +16,7 @@ public class InlineCommentParser: Parser {
     }
     
     
-    public func parseLine(line: String, container: inout [String: String]) {
+    public func parseLine(line: String, container: inout [String: [String]]) {
         let startMatchs = lineStartPattern.match(line)
         if startMatchs.count == 0 {
             return

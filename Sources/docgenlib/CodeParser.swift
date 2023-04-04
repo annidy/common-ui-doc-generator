@@ -8,7 +8,7 @@
 import Foundation
 
 protocol Parser {
-    func parseLine(line: String, container: inout [String: String])
+    func parseLine(line: String, container: inout [String: [String]])
 }
 
 public class CodeParser {
@@ -31,14 +31,24 @@ public class CodeParser {
             try? InlineCommentParser(tagName: tagName),
             try? XMLCommentParser(tagName: tagName)
         ]
-        var container = [String: String]()
+        var container = [String: [String]]()
         let reader = FileReader(fileUrl)
         while let line = reader?.getLine() {
             for parser in parsers {
                 parser?.parseLine(line: line, container: &container)
             }
         }
-        return container
+        return container.mapValues { lines in
+            var newLine = ""
+            for line in lines {
+                if newLine.isEmpty || newLine.last == "\n" {
+                    newLine += line
+                } else {
+                    newLine += "\n" + line
+                }
+            }
+            return newLine
+        }
     }
 }
 
@@ -52,6 +62,17 @@ extension Dictionary where Key == String, Value == String {
             }
         } else {
             self[tag] = value
+        }
+    }
+}
+
+extension Dictionary where Key == String, Value == [String] {
+    mutating func join(text value: String, forTag tag: String) {
+        if var exist = self[tag] {
+            exist.append(value)
+            self[tag] = exist
+        } else {
+            self[tag] = [value]
         }
     }
 }

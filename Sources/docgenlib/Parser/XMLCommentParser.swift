@@ -32,7 +32,7 @@ private class Tag {
         self.headSapceCount = headSapceCount
     }
     
-    func push(container: inout [String: String]) {
+    func push(container: inout [String: [String]]) {
         let text = body.map { li in
             if indent && li.count > headSapceCount {
                 let ali = Array(li)
@@ -60,7 +60,7 @@ public class XMLCommentParser: Parser {
         lineEndPattern = try Regex(#"\s*<!--(\s*)"# + tagName + #"(\s*)-->"#)
     }
     
-    public func parseLine(line: String, container: inout [String: String]) {
+    public func parseLine(line: String, container: inout [String: [String]]) {
         let startMatchs = lineStartPattern.match(line)
         if !startMatchs.isEmpty {
             markers.append(

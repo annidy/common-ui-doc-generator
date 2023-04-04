@@ -3,8 +3,8 @@ import ArgumentParser
 import docgenlib
 
 var sampleTags = [String: String]()
-var methodTags = [String: String]()
-var attributeTags = [String: String]()
+var methodTags = [(String, String)]()
+var attributeTags = [(String, String)]()
 
 @main
 struct docgen: ParsableCommand {
@@ -71,24 +71,32 @@ struct docgen: ParsableCommand {
     func methodProcess(fileUrl: URL) throws {
         let parser = DocParser(tagName: methodtag)
         let tags = try parser.parse(fileUrl: fileUrl)
-        methodTags.merge(tags) { (_, new) in new }
+        for (key, values) in tags {
+            for value in values {
+                methodTags.append((key, value))
+            }
+        }
     }
 
     func attributeProcess(fileUrl: URL) throws {
         let parser = DocParser(tagName: attributetag)
         let tags = try parser.parse(fileUrl: fileUrl)
-        attributeTags.merge(tags) { (_, new) in new }
+        for (key, values) in tags {
+            for value in values {
+                attributeTags.append((key, value))
+            }
+        }
     }
 
     func parseMethod() {
         var docs = [String: DocTableGenerator]()
-        for (_, value) in methodTags.enumerated() {
-            let names = value.key.split(separator: ".", maxSplits: 2)
+        for (key, value) in methodTags {
+            let names = key.split(separator: ".", maxSplits: 2)
             if names.count != 2 {
                 continue
             }
             let tableGenerator = docs[String(names[0])] ?? DocTableGenerator()
-            tableGenerator.appendMethod(name: String(names[1]), docs: value.value)
+            tableGenerator.appendMethod(name: String(names[1]), docs: value)
             docs[String(names[0])] = tableGenerator
         }
         for (_, value) in docs.enumerated() {
@@ -98,13 +106,13 @@ struct docgen: ParsableCommand {
 
     func parseAttribute() {
         var docs = [String: DocTableGenerator]()
-        for (_, value) in attributeTags.enumerated() {
-            let names = value.key.split(separator: ".", maxSplits: 2)
+        for (key, value) in attributeTags {
+            let names = key.split(separator: ".", maxSplits: 2)
             if names.count != 2 {
                 continue
             }
             let tableGenerator = docs[String(names[0])] ?? DocTableGenerator()
-            tableGenerator.appendAttribute(name: String(names[1]), docs: value.value)
+            tableGenerator.appendAttribute(name: String(names[1]), docs: value)
             docs[String(names[0])] = tableGenerator
         }
         for (_, value) in docs.enumerated() {

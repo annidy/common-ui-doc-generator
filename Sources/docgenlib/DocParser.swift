@@ -14,9 +14,9 @@ public class DocParser {
         self.tagName = tagName
     }
     
-    public func parse(fileUrl: URL) throws -> [String: String]  {
+    public func parse(fileUrl: URL) throws -> [String: [String]]  {
         let parser = try AnnotationParser(tagName: tagName)
-        var container = [String: String]()
+        var container = [String: [String]]()
         let reader = FileReader(fileUrl)
         while let line = reader?.getLine() {
             parser.parseLine(line: line, container: &container)

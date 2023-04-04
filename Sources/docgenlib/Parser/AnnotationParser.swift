@@ -59,7 +59,7 @@ class AnnotationParagraph {
         return true
     }
     
-    public func eject(container: inout [String: String]) {
+    public func eject(container: inout [String: [String]]) {
         container.join(text: lines.joined(), forTag: name)
     }
 }
@@ -74,7 +74,7 @@ public class AnnotationParser: Parser {
     }
     
     
-    public func parseLine(line: String, container: inout [String: String]) {
+    public func parseLine(line: String, container: inout [String: [String]]) {
         if let paragraph = paragraph {
             if !paragraph.push(line: line) {
                 paragraph.eject(container: &container)
