@@ -31,7 +31,7 @@ Best
 @param a2   bbb
 @return     true if t
 """)
-        XCTAssertEqual(sut.methodsTable(), "| Method | Description | Parameter |\n| --- | --- | --- |\n| abc | Test | `a122:` aaa<br/>`a2:`   bbb |\n")
+        XCTAssertEqual(sut.methodsTable(), "| Method | Description | Parameter |\n| --- | --- | --- |\n| abc | Test | <dl><dt>**a122**</dt><dd> aaa</dd><dt>**a2**</dt><dd>   bbb</dd></dl> |\n")
     }
     
     
@@ -48,7 +48,7 @@ from the given components.
 
 - Returns: A beautiful, brand-new bicycle
 """)
-        XCTAssertEqual(sut.methodsTable(), "| Method | Description | Parameter |\n| --- | --- | --- |\n| abc | magnitude of a vector in three dimensions | `x:` The *x* component of the vector.<br/>`y:` The *y* component of the vector.<br/>`z:` The *z* component of the vector. |\n")
+        XCTAssertEqual(sut.methodsTable(), "| Method | Description | Parameter |\n| --- | --- | --- |\n| abc | magnitude of a vector in three dimensions | <dl><dt>**x**</dt><dd> The *x* component of the vector.</dd><dt>**y**</dt><dd> The *y* component of the vector.</dd><dt>**z**</dt><dd> The *z* component of the vector.</dd></dl> |\n")
     }
     
     

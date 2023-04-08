@@ -2,9 +2,13 @@ import Foundation
 import Generator
 
 struct DocMethodItem {
+    struct Param {
+        let name: String
+        let desc: String
+    }
     var name: String
     var shortDescription: String?
-    var parameters: [String]
+    var parameters: [Param]
 }
 
 struct DocAttributeItem {
@@ -33,8 +37,8 @@ public class DocTableGenerator {
             var header = Array("@param")
             if newGenerator.next(header.count) == header {
                 newGenerator.skipWhitespace()
-                let paramString = "`\(newGenerator.nextWord() ?? ""):`" + newGenerator.remaining()
-                item.parameters.append(paramString)
+                let param = DocMethodItem.Param(name: newGenerator.nextWord() ?? "", desc: String(newGenerator.remaining()))
+                item.parameters.append(param)
                 continue
             }
             newGenerator = paramGenerator
@@ -44,8 +48,8 @@ public class DocTableGenerator {
                     newParamGenerator.skipWhitespace()
                     if newParamGenerator.next() == "-" {
                         newParamGenerator.skipWhitespace()
-                        let paramString = "`\(newParamGenerator.nextWord() ?? "")`" + newParamGenerator.remaining()
-                        item.parameters.append(paramString)
+                        let param = DocMethodItem.Param(name: (newParamGenerator.nextWord() ?? "").trimmingCharacters(in: CharacterSet(charactersIn: ":")), desc: String(newParamGenerator.remaining()))
+                        item.parameters.append(param)
                     } else {
                         break
                     }
@@ -85,7 +89,11 @@ public class DocTableGenerator {
         var result = "| Method | Description | Parameter |\n"
         result += "| --- | --- | --- |\n"
         for item in methodItems {
-            result += "| \(item.name) | \(item.shortDescription ?? "") | \(item.parameters.joined(separator: "<br/>")) |\n"
+            var list = ""
+            for param in item.parameters {
+                list.append("<dt>**\(param.name)**</dt><dd>\(param.desc)</dd>")
+            }
+            result += "| \(item.name) | \(item.shortDescription ?? "") | <dl>\(list)</dl> |\n"
         }
         return result
     }
