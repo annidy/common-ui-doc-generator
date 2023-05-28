@@ -5,9 +5,9 @@ docgen is a utility to parse code into a markdown file. The common scenario is t
 ## Supports
 Use a variable like `{{identifier}}` in the markdown file. The utility parse code or comment with the same identifier, and replace it in markdown. The default code file we search are: java, kotlin, xml (for Android), swift, m, mm, c and cpp.
 
-## Comments
+## Sample
 
-Comments is used for code, it don't change the format.
+Sample is the comments in code. When detected, it extract the source and don't change the format.
 
 ### Line Comment
 ```c
